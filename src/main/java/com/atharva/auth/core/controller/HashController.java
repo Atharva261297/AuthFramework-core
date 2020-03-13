@@ -23,4 +23,11 @@ public class HashController {
         final String id = new String(Base64.getDecoder().decode(split[0]));
         return credService.add(id, split[1]);
     }
+
+    @GetMapping("/admin/login")
+    public ErrorCodes login(@RequestHeader String auth) {
+        final String[] split = auth.split(":");
+        final String id = new String(Base64.getDecoder().decode(split[0]));
+        return credService.verify(id, split[1]);
+    }
 }

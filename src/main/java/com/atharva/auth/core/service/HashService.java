@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.Base64;
-
 @Service
 //@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
 @EnableTransactionManagement
@@ -27,18 +25,20 @@ public class HashService {
 
     public ErrorCodes verify(String id, String pass) {
         if (dao.existsById(id)) {
-            return ErrorCodes.ID_INCORRECT;
-        } else if (HashUtils.verifyHashModel(dao.getOne(new String(Base64.getDecoder().decode(id))), pass)) {
-            return ErrorCodes.SUCCESS;
+            if (HashUtils.verifyHashModel(dao.getOne(id), pass)) {
+                return ErrorCodes.SUCCESS;
+            } else {
+                return ErrorCodes.PASS_INCORRECT;
+            }
         } else {
-            return ErrorCodes.PASS_INCORRECT;
+            return ErrorCodes.ID_INCORRECT;
         }
     }
 
     public ErrorCodes update(String id, String oldPass, String newPass) {
         ErrorCodes code = verify(id, oldPass);
         if (code == ErrorCodes.SUCCESS) {
-            dao.update(id, HashUtils.getHashModel(new String(Base64.getDecoder().decode(id)), newPass).getPass());
+            dao.update(id, HashUtils.getHashModel(id, newPass).getPass());
             return ErrorCodes.SUCCESS;
         } else {
             return code;
