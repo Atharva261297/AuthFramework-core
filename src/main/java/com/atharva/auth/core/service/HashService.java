@@ -3,9 +3,12 @@ package com.atharva.auth.core.service;
 import com.atharva.auth.core.dao.HashRepository;
 import com.atharva.auth.core.model.ErrorCodes;
 import com.atharva.auth.core.utils.hash.HashUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 //@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
@@ -13,6 +16,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class HashService {
 
     @Autowired private HashRepository dao;
+
+    Logger log = LoggerFactory.getLogger(HashService.class);
 
     public ErrorCodes add(String id, String pass) {
         if (dao.existsById(id)) {
@@ -24,6 +29,7 @@ public class HashService {
     }
 
     public ErrorCodes verify(String id, String pass) {
+        log.debug("Login 2 : " + id);
         if (dao.existsById(id)) {
             if (HashUtils.verifyHashModel(dao.getOne(id), pass)) {
                 return ErrorCodes.SUCCESS;
@@ -35,13 +41,28 @@ public class HashService {
         }
     }
 
-    public ErrorCodes update(String id, String oldPass, String newPass) {
-        ErrorCodes code = verify(id, oldPass);
+    @Transactional
+    public ErrorCodes update(String oldId, String oldPass, String newId,String newPass) {
+        ErrorCodes code = verify(oldId, oldPass);
         if (code == ErrorCodes.SUCCESS) {
-            dao.update(id, HashUtils.getHashModel(id, newPass).getPass());
-            return ErrorCodes.SUCCESS;
+            if (oldId.equals(newId)) {
+                dao.getOne(oldId).setPass(HashUtils.getHashModel(oldId, newPass).getPass());
+                return ErrorCodes.SUCCESS;
+            } else {
+                return ErrorCodes.ID_NOT_SAME;
+            }
         } else {
             return code;
+        }
+    }
+
+    @Transactional
+    public ErrorCodes reset(String id, String pass) {
+        if (dao.existsById(id)) {
+            dao.getOne(id).setPass(HashUtils.getHashModel(id, pass).getPass());
+            return ErrorCodes.ID_ALREADY_EXITS;
+        } else {
+            return ErrorCodes.ID_INCORRECT;
         }
     }
 

@@ -6,10 +6,12 @@ import com.atharva.auth.core.model.HashModel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Arrays;
 
 @Service
+@EnableTransactionManagement
 public class ProjectService {
 
     @Autowired
@@ -44,15 +46,15 @@ public class ProjectService {
         }
     }
 
-    public ErrorCodes update(String id, String oldPass, String newPass) {
-        ErrorCodes code = verify(id, oldPass);
-        if (code == ErrorCodes.SUCCESS) {
-            dao.update(id, newPass.getBytes());
-            return ErrorCodes.SUCCESS;
-        } else {
-            return code;
-        }
-    }
+//    public ErrorCodes update(String id, String oldPass, String newPass) {
+//        ErrorCodes code = verify(id, oldPass);
+//        if (code == ErrorCodes.SUCCESS) {
+//            dao.update(id, newPass.getBytes());
+//            return ErrorCodes.SUCCESS;
+//        } else {
+//            return code;
+//        }
+//    }
 
     public ErrorCodes delete(String id, String pass) {
         ErrorCodes code = verify(id, pass);
