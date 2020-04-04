@@ -2,9 +2,10 @@ package com.atharva.auth.core;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
+@EnableFeignClients
 //@ImportResource(value = "classpath*:applicationContext.xml")
 public class Application {
 
