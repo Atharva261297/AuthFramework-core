@@ -14,14 +14,14 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-    @GetMapping("/register")
+    @PostMapping("/register")
     public ErrorCodes register(@RequestHeader String auth) {
         final String[] split = auth.split(":");
         final String id = new String(Base64.getDecoder().decode(split[0]));
         return projectService.add(id, split[1]);
     }
 
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public ErrorCodes verify(@RequestHeader String auth) {
         final String[] split = auth.split(":");
         final String id = new String(Base64.getDecoder().decode(split[0]));

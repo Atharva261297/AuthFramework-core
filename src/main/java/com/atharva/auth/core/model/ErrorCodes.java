@@ -10,6 +10,9 @@ public enum ErrorCodes {
     ACCOUNT_NOT_VERIFIED(406),
     ID_NOT_SAME(407),
 
+    PROJECT_ID_INCORRECT(410),
+    PROJECT_PASS_INCORRECT(411),
+
     UNKNOWN(500);
 
     int code;

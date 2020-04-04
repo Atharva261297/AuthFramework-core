@@ -1,27 +1,24 @@
 package com.atharva.auth.core.controller;
 
 import com.atharva.auth.core.model.ErrorCodes;
-import com.atharva.auth.core.service.HashService;
+import com.atharva.auth.core.service.AdminHashService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
 
 @RestController
-@RequestMapping("/auth")
-public class HashController {
+@RequestMapping("/auth/admin")
+public class AdminHashController {
 
     @Autowired
-    private HashService credService;
+    private AdminHashService credService;
 
-    Logger log = LoggerFactory.getLogger(HashController.class);
+    Logger log = LoggerFactory.getLogger(UserHashController.class);
 
-    @GetMapping("/register")
+    @PostMapping("/register")
     public ErrorCodes register(@RequestHeader String auth) {
         final String[] split = auth.split(":");
         final String id = new String(Base64.getDecoder().decode(split[0]));
@@ -29,7 +26,7 @@ public class HashController {
         return credService.add(id, split[1]);
     }
 
-    @GetMapping("/admin/login")
+    @PostMapping("/login")
     public ErrorCodes login(@RequestHeader String auth) {
         final String[] split = auth.split(":");
         final String id = new String(Base64.getDecoder().decode(split[0]));
@@ -37,16 +34,16 @@ public class HashController {
         return credService.verify(id, split[1]);
     }
 
-    @GetMapping("/admin/change")
+    @PostMapping("/change")
     public ErrorCodes change(@RequestHeader String new_auth, @RequestHeader String old_auth) {
         final String[] oldAuthSplit = old_auth.split(":");
         final String oldId = new String(Base64.getDecoder().decode(oldAuthSplit[0]));
-        final String[] newAuthSplit = old_auth.split(":");
+        final String[] newAuthSplit = new_auth.split(":");
         final String newId = new String(Base64.getDecoder().decode(oldAuthSplit[0]));
         return credService.update(oldId, oldAuthSplit[1], newId, newAuthSplit[1]);
     }
 
-    @GetMapping("/admin/reset")
+    @PostMapping("/reset")
     public ErrorCodes reset(@RequestHeader String auth) {
         final String[] split = auth.split(":");
         final String id = new String(Base64.getDecoder().decode(split[0]));
